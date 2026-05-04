@@ -28,7 +28,7 @@ python -m pip install printnode_community
 Install from source with `uv`:
 
 ```sh
-uv sync
+uv sync --locked
 ```
 
 For editable development installs, use:
@@ -39,16 +39,11 @@ uv pip install -e .
 
 ### Development
 
-Install development dependencies and run tests with:
+Install development dependencies and run the local verification gates with:
 
 ```sh
-uv sync
+uv sync --locked
 uv run pytest
-```
-
-Build and validate package artifacts with:
-
-```sh
 uv build
 uv run twine check dist/*
 ```

@@ -13,16 +13,12 @@ Thank you for helping maintain this PrintNode API client. This fork aims to be c
 
 ## Development
 
-The project uses `pyproject.toml` and `uv`. The standard local workflow is:
+The project uses `pyproject.toml` and `uv`. Use the validation gates recorded
+in `.github/github-repo-workflow.json`:
 
 ```sh
-uv sync
+uv sync --locked
 uv run pytest
-```
-
-Build checks will use:
-
-```sh
 uv build
 uv run twine check dist/*
 ```
