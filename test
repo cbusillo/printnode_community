@@ -1,4 +1,0 @@
-#! /bin/bash
-set -e
-export PYTHONPATH=$(dirname ${PWD}/$0)
-py.test tests "$@"
