@@ -9,11 +9,12 @@ The format follows the spirit of Keep a Changelog, and this project intends to u
 - Added repository workflow defaults for future GitHub workflow sessions.
 - Added public-path coverage for model-instance computer, printer, and print
   job lookups.
+- Aligned contributor and agent docs with the repository workflow metadata.
 - Updated post-release documentation now that `0.3.0` is published.
 - Removed stale private helper code that was unreachable from account and
   computer APIs.
-- Removed stale local IDE metadata and the legacy root `test` wrapper in favor
-  of the documented `uv run pytest` workflow.
+- Removed the legacy root `test` wrapper in favor of the documented
+  `uv run pytest` workflow.
 - Hardened model factory handling for missing or null optional nested PrintNode
   response fields.
 

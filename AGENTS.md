@@ -57,19 +57,13 @@ This repository is maintained as a careful, community-oriented Python client for
 
 ## Local Verification
 
-Use `uv` by default:
+Use the canonical gates from `.github/github-repo-workflow.json`:
 
 ```sh
-uv sync
+uv sync --locked
 uv run pytest
 uv build
 uv run twine check dist/*
 ```
 
 If a command cannot be run locally, mention why in the pull request body.
-
-## Code Agent Notes
-
-- Prefer pull-request-backed work and summarize verification clearly.
-- Keep changes boring, reviewable, and well-tested.
-- Update the durable stewardship plan at `~/.codex/plans/printnode-python-stewardship.md` when major phases start, finish, or change.
