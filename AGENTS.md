@@ -7,7 +7,7 @@ This repository is maintained as a careful, community-oriented Python client for
 ## Branch and PR Rules
 
 - The default branch is `main`.
-- Keep repo workflow defaults in `.github/github-repo-workflow.json` so future
+- Keep repo workflow defaults in `.github/github.json` so future
   GitHub workflow sessions can discover non-secret repo workflow facts,
   validation commands, GitHub signal availability, docs routing, important
   workflows, and cleanup policy.
@@ -57,7 +57,7 @@ This repository is maintained as a careful, community-oriented Python client for
 
 ## Local Verification
 
-Use the canonical gates from `.github/github-repo-workflow.json`:
+Use the canonical gates from `.github/github.json`:
 
 ```sh
 uv sync --locked

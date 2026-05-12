@@ -33,7 +33,10 @@
       "upstream compatibility changes"
     ]
   },
-  "importantWorkflows": ["CI", "Publish"],
+  "importantWorkflows": [
+    "CI",
+    "Publish"
+  ],
   "qaLabels": [],
   "deployLabels": [],
   "healthUrls": [
@@ -65,7 +68,6 @@
     ]
   },
   "relatedRepos": [],
-  "validatedThrough": ["CI", "Publish"],
   "metadataFreshness": {
     "updateWhen": [
       "docs routing changes",
