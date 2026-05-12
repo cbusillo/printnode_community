@@ -14,7 +14,7 @@ Thank you for helping maintain this PrintNode API client. This fork aims to be c
 ## Development
 
 The project uses `pyproject.toml` and `uv`. Use the validation gates recorded
-in `.github/github-repo-workflow.json`:
+in `.github/github.json`:
 
 ```sh
 uv sync --locked
