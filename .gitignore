@@ -30,3 +30,4 @@ dist/
 build/
 *.egg-info/
 *.override.*
+/handoff*.md
