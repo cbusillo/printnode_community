@@ -17,6 +17,8 @@ jobs:
   test:
     name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    # Time budget: jobs take about 15 seconds; fail loudly if one hangs.
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -50,6 +52,8 @@ jobs:
   package:
     name: Build package
     runs-on: ubuntu-latest
+    # Time budget: jobs take about 15 seconds; fail loudly if one hangs.
+    timeout-minutes: 5
 
     steps:
       - name: Check out repository

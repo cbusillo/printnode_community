@@ -40,6 +40,15 @@ This repository is maintained as a careful, community-oriented Python client for
 - Gate live PrintNode API tests behind explicit environment variables.
 - Add or update tests for behavior changes.
 - Do not remove coverage just because legacy tests are awkward.
+- A test stays only if it fails when the product is broken and passes when
+  someone makes an intended change.
+- No test may assert a literal defined elsewhere (package version, Python or
+  toolchain versions, hashes, classifiers); read it from the one source of
+  truth or do not test it.
+- No test may assert workflow or config text. Enforce such rules where they
+  execute (the workflow itself, or a helper script with its own unit test).
+- Verification code must not depend on working-tree state; check live state
+  only on the path that acts on it.
 
 ## Release Standards
 
