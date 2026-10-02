@@ -153,9 +153,9 @@ https://www.printnode.com/docs/api/curl/#printers
 * A printer name string filters that list by exact name, and still returns a list.
 * For these list lookups, `computer` may be an integer ID, a `Computer` model,
   an exact computer name, or `None` for account-wide lookup. When no computer
-  IDs resolve (including an account with no computers), the current client
-  produces a malformed request; see [issue 50](https://github.com/cbusillo/printnode_community/issues/50).
-  Computer-filtered print-job lookups and submission use the same printer resolution.
+  IDs resolve (including an account with no computers), returns an empty list
+  without a printer request. Computer-filtered print-job lookups also return
+  an empty list; submission raises `LookupError` without posting a job.
 * An integer printer ID or `Printer` model returns one printer, raising
   `LookupError` if the ID is not found. This lookup ignores `computer`;
   supplying a computer does not check that the printer belongs to it.

@@ -79,6 +79,8 @@ class Computers:
 
         if self._is_multi_query(printer):
             computer_ids = ','.join(map(str, self._get_computer_ids(computer)))
+            if not computer_ids:
+                return []
             url = '/computers/{}/printers'.format(computer_ids)
             if params is not None:
                 url = url + '?' + params

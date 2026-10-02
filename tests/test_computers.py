@@ -1,9 +1,11 @@
 import pytest
 
 from printnode_community.computers import Computers
+from printnode_community.gateway import Gateway
 from printnode_community.model import Computer, ModelFactory, Printer, PrintJob
 
 from tests.test_model import computer_payload, printer_payload, printjob_payload
+from tests.test_auth import FakeResponse
 
 
 class FakeAuth:
@@ -78,6 +80,67 @@ def test_get_printers_for_computer_builds_expected_url():
 
     assert auth.get_calls == ['/computers/100/printers?limit=5']
     assert [printer.name for printer in result] == ['Shipping Printer']
+
+
+@pytest.mark.parametrize('computer', [None, 'Missing Computer'])
+@pytest.mark.parametrize('printer', [None, 'Shipping Printer'])
+def test_gateway_empty_computers_return_no_printers(monkeypatch, computer, printer):
+    calls = []
+
+    def fake_get(url, **kwargs):
+        calls.append(url)
+        assert url == Gateway.URL + '/computers'
+        payload = [] if computer is None else [computer_payload(name='Other Computer')]
+        return FakeResponse(200, payload)
+
+    monkeypatch.setattr('printnode_community.auth.requests.get', fake_get)
+    assert Gateway(apikey='test-api-key').printers(
+        computer=computer, printer=printer, limit=5) == []
+    assert calls == [Gateway.URL + '/computers']
+
+
+@pytest.mark.parametrize('computer', [None, 'Missing Computer'])
+@pytest.mark.parametrize('operation', ['lookup', 'submit'])
+def test_gateway_empty_computers_do_not_request_or_submit_jobs(
+        monkeypatch, computer, operation):
+    calls = []
+
+    def fake_get(url, **kwargs):
+        calls.append(url)
+        assert url == Gateway.URL + '/computers'
+        return FakeResponse(200, [])
+
+    monkeypatch.setattr('printnode_community.auth.requests.get', fake_get)
+    monkeypatch.setattr('printnode_community.auth.requests.post',
+                        lambda **kwargs: pytest.fail('No print job should be submitted'))
+    gateway = Gateway(apikey='test-api-key')
+    if operation == 'lookup':
+        assert gateway.printjobs(computer=computer, printer='Shipping Printer') == []
+    else:
+        with pytest.raises(LookupError, match='printer not found'):
+            gateway.PrintJob(computer=computer, printer='Shipping Printer',
+                             uri='https://example.com/file.pdf')
+    assert calls == [Gateway.URL + '/computers']
+
+
+@pytest.mark.parametrize('computer', [100, 'Office Computer'])
+def test_gateway_matching_computers_keep_printer_lookup(monkeypatch, computer):
+    calls = []
+    responses = {
+        Gateway.URL + '/computers': [computer_payload(id=100, name='Office Computer')],
+        Gateway.URL + '/computers/100/printers?limit=5': [printer_payload(id=200)],
+    }
+
+    def fake_get(url, **kwargs):
+        calls.append(url)
+        return FakeResponse(200, responses[url])
+
+    monkeypatch.setattr('printnode_community.auth.requests.get', fake_get)
+    result = Gateway(apikey='test-api-key').printers(
+        computer=computer, printer='Shipping Printer', limit=5)
+    assert [printer.id for printer in result] == [200]
+    expected = [Gateway.URL + '/computers'] if isinstance(computer, str) else []
+    assert calls == expected + [Gateway.URL + '/computers/100/printers?limit=5']
 
 
 def test_get_printers_accepts_computer_model_instance():
