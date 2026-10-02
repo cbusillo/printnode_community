@@ -16,7 +16,11 @@ This repository is maintained as a careful, community-oriented Python client for
 - Keep pull requests small enough to review.
 - Require tests and CI before merge whenever the change affects code, packaging, or release behavior.
 - Treat default-branch migration and repository settings as explicit maintenance tasks.
-- Do not push branches or open pull requests unless the user explicitly asks for that action.
+- Follow the Director's [overall direction](https://github.com/cbusillo/direction/blob/HEAD/DIRECTION.md)
+  for ordinary engineering within the authorized task, including task-branch
+  pushes and pull requests. Apply its Stop Boundaries; task-specific action
+  limits still apply. Merge only when the task authorizes the change and
+  destination and required checks pass.
 
 ## Python Project Standards
 
