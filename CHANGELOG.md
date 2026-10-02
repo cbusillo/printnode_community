@@ -6,6 +6,9 @@ The format follows the spirit of Keep a Changelog, and maintained releases use s
 
 ## Unreleased
 
+- Serialized numeric child-account IDs as valid HTTP header strings and handled
+  successful empty API responses, including child-account deletion, without
+  weakening validation of responses with bodies.
 - Corrected lookup return types, method arguments and print-job examples in the
   README, and aligned contribution and agent guidance with current direction.
 - Added repository workflow defaults for future GitHub workflow sessions.
