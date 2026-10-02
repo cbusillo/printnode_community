@@ -96,6 +96,10 @@ are named tuples with snake_case attributes. Tag, API-key, client-key, account-c
 methods return the decoded API response. Python method names and lookup behavior are described
 below; they do not always match the remote API parameter names.
 
+Computer, printer, print-job and state list lookups request one API page; they
+do not fetch every page automatically. Use `limit`, `after` and `dir` to page
+through results. Name and title filters apply only to the records fetched.
+
 
 ### Computers Library
 This handles anything that is associated with a computer, such as Printers, PrintJobs, States (of PrintJobs) and Scales.
@@ -175,9 +179,9 @@ https://www.printnode.com/docs/api/curl/#printjob-viewing
 #### printjobs(computer=None, printer=None, printjob=None, limit=None, after=None, dir=None)
 Common lookup forms:
 
-* No arguments : Returns all printjobs associated with the account.
-* *computer* int : Returns all printjobs relative to printers associated with the computer specified by the argument *computer*.
-* *printer* int : Returns all printjobs relative to the printer specified by the argument *printer*.
+* No arguments : Returns one page of print jobs associated with the account.
+* *computer* int : Returns one page of jobs for the printers found on that computer.
+* *printer* int : Returns one page of jobs for that printer.
 * *computer* int, *printer* int : Returns jobs for the printer ID; the numeric
   printer lookup ignores the computer argument.
 * *printjob* int or `PrintJob` model : Returns one print job, ignoring
@@ -309,7 +313,7 @@ new_account = gateway.CreateAccount(
     firstname="A",
     lastname="Person",
     password="password",
-    email="aperson@emailprovider.com",
+    email="aperson@example.com",
     tags={"Likes":"Something"}
     )
 new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
@@ -339,7 +343,7 @@ new_account = gateway.CreateAccount(
     firstname="A",
     lastname="Person",
     password="password",
-    email="aperson@emailprovider.com",
+    email="aperson@example.com",
     tags={"Likes":"Something"}
     )
 new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
@@ -366,7 +370,7 @@ new_account = gateway.CreateAccount(
     firstname="A",
     lastname="Person",
     password="password",
-    email="aperson@emailprovider.com",
+    email="aperson@example.com",
     tags={"Likes":"Something"}
     )
 new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
@@ -392,7 +396,7 @@ new_account = gateway.CreateAccount(
     firstname="A",
     lastname="Person",
     password="password",
-    email="aperson@emailprovider.com",
+    email="aperson@example.com",
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
@@ -417,7 +421,7 @@ new_account = gateway.CreateAccount(
     firstname="A",
     lastname="Person",
     password="password",
-    email="aperson@emailprovider.com",
+    email="aperson@example.com",
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
@@ -443,7 +447,7 @@ new_account = gateway.CreateAccount(
     firstname="A",
     lastname="Person",
     password="password",
-    email="aperson@emailprovider.com",
+    email="aperson@example.com",
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
@@ -472,7 +476,7 @@ new_account = gateway.CreateAccount(
     firstname="A",
     lastname="Person",
     password="password",
-    email="aperson@emailprovider.com",
+    email="aperson@example.com",
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
@@ -498,7 +502,7 @@ This has three different outcomes:
 * *os* and *client_ids* both None: Returns all clients available for the current account.
 * *os* str and *client_ids* None: Returns a `Download` model for the most
   recent version for the OS value accepted by the API.
-* *os* None and *client_ids* str: Given a set of ids (e.g "11-15"), return all clients in that set.
+* *os* None and *client_ids* str: Given a set of ids (e.g "11,12"), return all clients in that set.
 
 Having both set will default to showing the most recent version for the os argument.
 
@@ -506,7 +510,7 @@ Having both set will default to showing the most recent version for the os argum
 from printnode_community import Gateway
 
 gateway=Gateway(url='https://api.printnode.com',apikey='secretAPIKey')
-for client in gateway.clients(client_ids="11-12"):
+for client in gateway.clients(client_ids="11,12"):
     print(client.id)
 print(gateway.clients(os="windows").os)
 
