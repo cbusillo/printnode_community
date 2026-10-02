@@ -80,18 +80,20 @@ Gateway(clientkey='ckey')
 ```
 
 The three below will authenticate with access to child accounts of a specific user:
+Pass `child_id` as a string; integer header values are rejected by `requests`
+([issue 49](https://github.com/cbusillo/printnode_community/issues/49)).
 
 ```python
 Gateway(apikey='api-key',child_email='c_email')
 Gateway(apikey='api-key',child_ref='c_creator_ref')
-Gateway(apikey='api-key',child_id='c_id')
+Gateway(apikey='api-key',child_id='123')
 ```
 
 ### Gateway Methods
 The links below describe the remote API. This library returns model objects
 for account, computer, printer, print-job, state and download lookups; these
-are named tuples with snake_case attributes. Tag and API-key methods return
-the decoded API response. Python method names and lookup behavior are described
+are named tuples with snake_case attributes. Tag, API-key, client-key, account-creation/deletion and download-control
+methods return the decoded API response. Python method names and lookup behavior are described
 below; they do not always match the remote API parameter names.
 
 
@@ -101,7 +103,7 @@ This handles anything that is associated with a computer, such as Printers, Prin
 ### Account lookup
 https://www.printnode.com/docs/api/curl/#whoami
 
-#### account(self)
+#### account (property)
 Returns an Account object of the currently authenticated account.
 ```python
 from printnode_community import Gateway
@@ -142,7 +144,8 @@ https://www.printnode.com/docs/api/curl/#printers
 * With no printer selector, returns a list of printers.
 * A printer name string filters that list by exact name, and still returns a list.
 * For these list lookups, `computer` may be an integer ID, a `Computer` model,
-  an exact computer name, or `None` for all computers.
+  an exact computer name, or `None` for all computers. A name with no matches
+  currently produces a malformed request; see [issue 50](https://github.com/cbusillo/printnode_community/issues/50).
 * An integer printer ID or `Printer` model returns one printer, raising
   `LookupError` if the ID is not found. This lookup ignores `computer`;
   supplying a computer does not check that the printer belongs to it.
@@ -170,7 +173,7 @@ Results:
 https://www.printnode.com/docs/api/curl/#printjob-viewing
 
 #### printjobs(computer=None, printer=None, printjob=None, limit=None, after=None, dir=None)
-There are five ways this can be run:
+Common lookup forms:
 
 * No arguments : Returns all printjobs associated with the account.
 * *computer* int : Returns all printjobs relative to printers associated with the computer specified by the argument *computer*.
@@ -243,7 +246,7 @@ This handles anything to do with accounts, such as Account creation, deletion an
 ### Tag lookup
 https://www.printnode.com/docs/api/curl/#account-tagging
 
-#### tag(self, tagname)
+#### tag(tagname)
 Given a *tagname*, returns the value of that tag.
 
 ```python
@@ -258,7 +261,7 @@ Everything!
 '''
 ```
 ### Tag modification
-#### ModifyTag(self, tagname, tagvalue)
+#### ModifyTag(tagname, tagvalue)
 Given a *tagname* and *tagvalue*, either creates a tag with specified value if *tagname* doesn't exist, otherwise changes the value.
 
 ```python
@@ -275,7 +278,7 @@ PrintNode
 ```
 
 ### Tag deletion
-#### DeleteTag(self, tagname)
+#### DeleteTag(tagname)
 Given a *tagname*, deletes that tag and returns the decoded API response.
 
 ```python
@@ -295,7 +298,7 @@ Results:
 ### Account creation
 https://www.printnode.com/docs/api/curl/#account-creation
 
-#### CreateAccount(self, firstname, lastname, email, password, creator_ref=None, api_keys=None, tags=None)
+#### CreateAccount(firstname, lastname, email, password, creator_ref=None, api_keys=None, tags=None)
 Creates an account with the specified values. The last three are optional.
 
 ```python
@@ -309,7 +312,7 @@ new_account = gateway.CreateAccount(
     email="aperson@emailprovider.com",
     tags={"Likes":"Something"}
     )
-new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=new_account["Account"]["id"])
+new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
 print(new_account_gateway.account.firstname)
 new_account_gateway.DeleteAccount()
 
@@ -322,7 +325,11 @@ A
 ### Account deletion
 https://www.printnode.com/docs/api/curl/#account-deletion
 
-#### DeleteAccount(self)
+#### DeleteAccount()
+The current client attempts to decode even an empty successful response. A
+`204 No Content` response can therefore raise a JSON decoding error after the
+account has already been deleted; see [issue 49](https://github.com/cbusillo/printnode_community/issues/49).
+
 Deletes the child account that is currently authenticated. Accounts can only be deleted if authenticated by a parent account's api-key and a reference to the child account being deleted (e.g the child account's id)
 ```python
 from printnode_community import Gateway
@@ -335,7 +342,7 @@ new_account = gateway.CreateAccount(
     email="aperson@emailprovider.com",
     tags={"Likes":"Something"}
     )
-new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=new_account["Account"]["id"])
+new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
 new_account_gateway.DeleteAccount()
 print(new_account["Account"]["id"] in gateway.account.child_accounts)
 
@@ -348,7 +355,7 @@ False
 ### Account modification
 https://www.printnode.com/docs/api/curl/#account-modification
 
-#### ModifyAccount(self, firstname=None, lastname=None, password=None, email=None, creator_ref=None)
+#### ModifyAccount(firstname=None, lastname=None, password=None, email=None, creator_ref=None)
 Given one or more arguments, changes the account details specified by the arguments.
 
 ```python
@@ -362,7 +369,7 @@ new_account = gateway.CreateAccount(
     email="aperson@emailprovider.com",
     tags={"Likes":"Something"}
     )
-new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=new_account["Account"]["id"])
+new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
 new_account_gateway.ModifyAccount(firstname="B")
 print(new_account_gateway.account.firstname)
 new_account_gateway.DeleteAccount()
@@ -389,7 +396,7 @@ new_account = gateway.CreateAccount(
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
-new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=new_account["Account"]["id"])
+new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
 print(new_account_gateway.api_key("Production"))
 new_account_gateway.DeleteAccount()
 
@@ -414,7 +421,7 @@ new_account = gateway.CreateAccount(
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
-new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=new_account["Account"]["id"])
+new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
 new_account_gateway.CreateApiKey("Development")
 print(new_account_gateway.account.api_keys)
 new_account_gateway.DeleteAccount()
@@ -440,7 +447,7 @@ new_account = gateway.CreateAccount(
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
-new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=new_account["Account"]["id"])
+new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
 new_account_gateway.DeleteApiKey("Production")
 print(new_account_gateway.account.api_keys)
 new_account_gateway.DeleteAccount()
@@ -469,7 +476,7 @@ new_account = gateway.CreateAccount(
     tags={"Likes":"Something"},
     api_keys=["Production"]
     )
-new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=new_account["Account"]["id"])
+new_account_gateway = Gateway(url='https://api.printnode.com',apikey='secretAPIKey',child_id=str(new_account["Account"]["id"]))
 new_clientkey = new_account_gateway.clientkey(
     uuid="0a756864-602e-428f-a90b-842dee47f57e",
     edition="printnode",
@@ -485,7 +492,7 @@ example-client-key
 ### Download client lookup
 https://www.printnode.com/docs/api/curl/#account-download-management
 
-#### clients(self, client_ids = None, os = None)
+#### clients(client_ids=None, os=None)
 This has three different outcomes:
 
 * *os* and *client_ids* both None: Returns all clients available for the current account.
@@ -512,8 +519,8 @@ windows
 ```
 
 ### Download client controlling
-#### ModifyClientDownloads(self, client_id, enabled)
-Given a set of ids and either True or False, sets whether the clients are enabled or not. Returns a list of modified clients.
+#### ModifyClientDownloads(client_id, enabled)
+Given a set of ids and either True or False, sets whether the clients are enabled or not. Returns the decoded API response (a list of modified download IDs, not `Client` models).
 ```python
 from printnode_community import Gateway
 

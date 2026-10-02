@@ -17,13 +17,9 @@ This repository is maintained as a careful, community-oriented Python client for
 - Require tests and CI before merge whenever the change affects code, packaging, or release behavior.
 - Treat default-branch migration and repository settings as explicit maintenance tasks.
 - Follow the Director's [overall direction](https://github.com/cbusillo/direction/blob/HEAD/DIRECTION.md)
-  for ordinary engineering, including
-  task-branch pushes and pull requests within the authorized task. Ask before
-  spending money, changing a paid plan, granting or removing access, affecting
-  an outside Client's business through a deploy, promotion or data change, or
-  sending a message, comment or push
-  outside the Director and the Director's agents, unless a recorded decision
-  or an established review flow already authorizes it.
+  for ordinary engineering within the authorized task, including task-branch
+  pushes and pull requests. Apply its Stop Boundaries; task-specific action
+  limits still apply.
 
 ## Python Project Standards
 
