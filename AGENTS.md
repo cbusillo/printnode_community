@@ -19,7 +19,8 @@ This repository is maintained as a careful, community-oriented Python client for
 - Follow the Director's [overall direction](https://github.com/cbusillo/direction/blob/HEAD/DIRECTION.md)
   for ordinary engineering within the authorized task, including task-branch
   pushes and pull requests. Apply its Stop Boundaries; task-specific action
-  limits still apply.
+  limits still apply. Merge only when the task authorizes the change and
+  destination and required checks pass.
 
 ## Python Project Standards
 

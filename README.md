@@ -91,7 +91,7 @@ Gateway(apikey='api-key',child_id='123')
 
 ### Gateway Methods
 The links below describe the remote API. This library returns model objects
-for account, computer, printer, print-job, state and download lookups; these
+for account, computer, printer, print-job, state, scale and download lookups; these
 are named tuples with snake_case attributes. Tag, API-key, client-key, account-creation/deletion and download-control
 methods return the decoded API response. Python method names and lookup behavior are described
 below; they do not always match the remote API parameter names.
@@ -148,8 +148,9 @@ https://www.printnode.com/docs/api/curl/#printers
 * With no printer selector, returns a list of printers.
 * A printer name string filters that list by exact name, and still returns a list.
 * For these list lookups, `computer` may be an integer ID, a `Computer` model,
-  an exact computer name, or `None` for all computers. A name with no matches
-  currently produces a malformed request; see [issue 50](https://github.com/cbusillo/printnode_community/issues/50).
+  an exact computer name, or `None` for account-wide lookup. When no computer
+  IDs resolve (including an account with no computers), the current client
+  produces a malformed request; see [issue 50](https://github.com/cbusillo/printnode_community/issues/50).
 * An integer printer ID or `Printer` model returns one printer, raising
   `LookupError` if the ID is not found. This lookup ignores `computer`;
   supplying a computer does not check that the printer belongs to it.
@@ -303,6 +304,7 @@ Results:
 https://www.printnode.com/docs/api/curl/#account-creation
 
 #### CreateAccount(firstname, lastname, email, password, creator_ref=None, api_keys=None, tags=None)
+Arguments must be passed by keyword.
 Creates an account with the specified values. The last three are optional.
 
 ```python
@@ -331,7 +333,8 @@ https://www.printnode.com/docs/api/curl/#account-deletion
 
 #### DeleteAccount()
 The current client attempts to decode even an empty successful response. A
-`204 No Content` response can therefore raise a JSON decoding error after the
+`204 No Content` response can therefore raise `ValueError` (including JSON
+decoding errors) after the
 account has already been deleted; see [issue 49](https://github.com/cbusillo/printnode_community/issues/49).
 
 Deletes the child account that is currently authenticated. Accounts can only be deleted if authenticated by a parent account's api-key and a reference to the child account being deleted (e.g the child account's id)
@@ -360,6 +363,7 @@ False
 https://www.printnode.com/docs/api/curl/#account-modification
 
 #### ModifyAccount(firstname=None, lastname=None, password=None, email=None, creator_ref=None)
+Arguments must be passed by keyword; returns the updated `Account` model.
 Given one or more arguments, changes the account details specified by the arguments.
 
 ```python
