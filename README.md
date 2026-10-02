@@ -56,7 +56,7 @@ requirements.
 Create a `Gateway` with an API key, or one of the other authentication modes
 below. Construction configures authentication; accessing account data or calling
 an API method sends an HTTP request. The examples use placeholder credentials
-and illustrative results. Account, tag, API-key and print-job mutations change
+and illustrative results. Account, tag, API-key, download-control and print-job mutations change
 the authenticated account; run them only against an account you intend to change.
 
 ```python
@@ -80,6 +80,7 @@ Gateway(clientkey='ckey')
 ```
 
 The three below will authenticate with access to child accounts of a specific user:
+
 Pass `child_id` as a string; integer header values are rejected by `requests`
 ([issue 49](https://github.com/cbusillo/printnode_community/issues/49)).
 
@@ -98,7 +99,10 @@ below; they do not always match the remote API parameter names.
 
 Computer, printer, print-job and state list lookups request one API page; they
 do not fetch every page automatically. Use `limit`, `after` and `dir` to page
-through results. Name and title filters apply only to the records fetched.
+through results. Name and title filters apply only to the records fetched. Printer lookups by
+computer name or with `computer=None` resolve computers from their first API
+page. Computer-filtered print-job lookups resolve printers from their first
+page too; their pagination arguments affect only the subsequent job request.
 
 
 ### Computers Library
@@ -151,6 +155,7 @@ https://www.printnode.com/docs/api/curl/#printers
   an exact computer name, or `None` for account-wide lookup. When no computer
   IDs resolve (including an account with no computers), the current client
   produces a malformed request; see [issue 50](https://github.com/cbusillo/printnode_community/issues/50).
+  Computer-filtered print-job lookups and submission use the same printer resolution.
 * An integer printer ID or `Printer` model returns one printer, raising
   `LookupError` if the ID is not found. This lookup ignores `computer`;
   supplying a computer does not check that the printer belongs to it.
@@ -332,7 +337,8 @@ A
 https://www.printnode.com/docs/api/curl/#account-deletion
 
 #### DeleteAccount()
-The current client attempts to decode even an empty successful response. A
+The current client requires a JSON content type and body even for an empty
+successful response. A
 `204 No Content` response can therefore raise `ValueError` (including JSON
 decoding errors) after the
 account has already been deleted; see [issue 49](https://github.com/cbusillo/printnode_community/issues/49).
