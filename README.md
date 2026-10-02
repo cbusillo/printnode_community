@@ -81,8 +81,8 @@ Gateway(clientkey='ckey')
 
 The three below will authenticate with access to child accounts of a specific user:
 
-Pass `child_id` as a string; integer header values are rejected by `requests`
-([issue 49](https://github.com/cbusillo/printnode_community/issues/49)).
+Pass `child_id` as an integer or a string; integer IDs are serialized as HTTP
+header strings.
 
 ```python
 Gateway(apikey='api-key',child_email='c_email')
@@ -337,11 +337,9 @@ A
 https://www.printnode.com/docs/api/curl/#account-deletion
 
 #### DeleteAccount()
-The current client requires a JSON content type and body even for an empty
-successful response. A
-`204 No Content` response can therefore raise `ValueError` (including JSON
-decoding errors) after the
-account has already been deleted; see [issue 49](https://github.com/cbusillo/printnode_community/issues/49).
+Returns `None` for a successful empty response, including `204 No Content`.
+Responses with a body still require a JSON content type and valid JSON; API
+errors are raised as before.
 
 Deletes the child account that is currently authenticated. Accounts can only be deleted if authenticated by a parent account's api-key and a reference to the child account being deleted (e.g the child account's id)
 ```python

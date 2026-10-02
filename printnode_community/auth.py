@@ -51,6 +51,8 @@ class Auth:
 
     def _init_from_child_id(self, apikey, child_id):
         self._auth = (apikey, '')
+        if isinstance(child_id, int):
+            child_id = str(child_id)
         self._headers = {'X-Child-Account-By-Id': child_id}
 
     def get(self, endpoint, request_headers=None):
@@ -96,6 +98,9 @@ class Auth:
                 auth=self._auth,
                 headers=headers,
                 **other_args)
+
+        if 200 <= response.status_code < 300 and not response.content:
+            return None
 
         content_type = response.headers.get('content-type')
         media_type = None

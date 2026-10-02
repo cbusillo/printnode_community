@@ -22,6 +22,7 @@ class FakeResponse:
     def __init__(self, status_code, payload, content_type='application/json'):
         self.status_code = status_code
         self._payload = payload
+        self.content = json.dumps(payload).encode('utf-8')
         self.headers = {'content-type': content_type}
 
     def json(self):
@@ -75,6 +76,62 @@ def test_gateway_handles_unauthentication(monkeypatch):
         gateway.account
 
 
+@pytest.mark.parametrize('child_id', [123, '123'])
+def test_gateway_child_id_prepares_valid_http_header(monkeypatch, child_id):
+    def fake_get(url, auth, headers, **kwargs):
+        prepared = requests.Request('GET', url, auth=auth, headers=headers).prepare()
+        assert prepared.headers['X-Child-Account-By-Id'] == '123'
+        response = requests.Response()
+        response.status_code = 200
+        response.headers['Content-Type'] = 'application/json'
+        response._content = b'{"id": 123}'
+        return response
+
+    monkeypatch.setattr('printnode_community.auth.requests.get', fake_get)
+    assert Gateway(apikey=API_KEY, child_id=child_id).account.id == 123
+
+
+@pytest.mark.parametrize('status_code', [200, 204])
+@pytest.mark.parametrize('content_type', [None, 'application/json'])
+def test_gateway_delete_account_accepts_empty_success(
+        monkeypatch, status_code, content_type):
+    calls = []
+
+    def fake_delete(url, auth, headers, **kwargs):
+        prepared = requests.Request('DELETE', url, auth=auth, headers=headers).prepare()
+        calls.append(prepared)
+        response = requests.Response()
+        response.status_code = status_code
+        response._content = b''
+        if content_type is not None:
+            response.headers['Content-Type'] = content_type
+        return response
+
+    monkeypatch.setattr('printnode_community.auth.requests.delete', fake_delete)
+    assert Gateway(apikey=API_KEY, child_id='123').DeleteAccount() is None
+    assert len(calls) == 1
+    assert calls[0].url == API_ADDRESS + '/account'
+
+
+@pytest.mark.parametrize('status_code,body,content_type,error', [
+    (200, b'not json', 'application/json', requests.exceptions.JSONDecodeError),
+    (204, b'not json', 'application/json', requests.exceptions.JSONDecodeError),
+    (200, b'{"deleted": true}', 'text/html', ValueError),
+    (401, b'', 'application/json', requests.exceptions.JSONDecodeError),
+    (401, b'{"code":"Denied","message":"Not authorized"}', 'application/json', Unauthorized),
+])
+def test_gateway_delete_account_preserves_response_validation(
+        monkeypatch, status_code, body, content_type, error):
+    response = requests.Response()
+    response.status_code = status_code
+    response.headers['Content-Type'] = content_type
+    response._content = body
+    monkeypatch.setattr('printnode_community.auth.requests.delete', lambda **kwargs: response)
+
+    with pytest.raises(error):
+        Gateway(apikey=API_KEY, child_id='123').DeleteAccount()
+
+
 @pytest.mark.parametrize('kwargs,expected_auth,expected_headers', [
     ({'apikey': 'api-key'}, ('api-key', ''), {}),
     (
@@ -100,7 +157,7 @@ def test_gateway_handles_unauthentication(monkeypatch):
     (
         {'apikey': 'api-key', 'child_id': 123},
         ('api-key', ''),
-        {'X-Child-Account-By-Id': 123},
+        {'X-Child-Account-By-Id': '123'},
     ),
 ])
 def test_auth_modes_send_expected_auth_and_headers(
