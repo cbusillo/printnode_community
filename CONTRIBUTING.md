@@ -35,4 +35,7 @@ Preserve the `printnode_community` import path. Breaking changes require an expl
 
 ## Releases
 
-Releases are cut only from reviewed code that has passed CI. New distribution names must be tested on TestPyPI before publishing to PyPI.
+Releases are cut only from reviewed code that has passed CI. Prefer TestPyPI
+before first publishing under a new distribution name. It may
+be skipped when CI, build metadata checks, and release-tag guards are sufficient;
+see [RELEASE.md](RELEASE.md).

@@ -2,9 +2,12 @@
 
 All notable changes to this community-maintained fork will be documented in this file.
 
-The format follows the spirit of Keep a Changelog, and this project intends to use semantic versioning once the first maintained release is cut.
+The format follows the spirit of Keep a Changelog, and maintained releases use semantic versioning as described in RELEASE.md.
 
 ## Unreleased
+
+- Corrected lookup return types, method arguments and print-job examples in the
+  README, and aligned contribution and agent guidance with current direction.
 
 - Added repository workflow defaults for future GitHub workflow sessions.
 - Added public-path coverage for model-instance computer, printer, and print

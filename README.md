@@ -31,11 +31,8 @@ Install from source with `uv`:
 uv sync --locked
 ```
 
-For editable development installs, use:
-
-```sh
-uv pip install -e .
-```
+`uv sync --locked` also installs this project in editable mode and includes
+the development dependencies.
 
 ### Development
 
@@ -56,7 +53,11 @@ requirements.
 
 ### Getting Started
 
-The default constructor for the Library is a Gateway, which is constructed with at minimum of one key-word argument, that being an api-key.
+Create a `Gateway` with an API key, or one of the other authentication modes
+below. Construction configures authentication; accessing account data or calling
+an API method sends an HTTP request. The examples use placeholder credentials
+and illustrative results. Account, tag, API-key and print-job mutations change
+the authenticated account; run them only against an account you intend to change.
 
 ```python
 from printnode_community import Gateway
@@ -87,7 +88,11 @@ Gateway(apikey='api-key',child_id='c_id')
 ```
 
 ### Gateway Methods
-All of these will have the associated API doc next to them. Any of the argument types will be exactly the same as the attributes used in a normal request. Any "Objects" under type are represented as a `dict`, which will have the same representation as the JSON objects.
+The links below describe the remote API. This library returns model objects
+for account, computer, printer, print-job, state and download lookups; these
+are named tuples with snake_case attributes. Tag and API-key methods return
+the decoded API response. Python method names and lookup behavior are described
+below; they do not always match the remote API parameter names.
 
 
 ### Computers Library
@@ -112,8 +117,11 @@ Mr
 ### Computer lookup
 https://www.printnode.com/docs/api/curl/#computers
 
-#### computers(self, computer)
-Given a set of computers, returns these computers. Given only one id, returns that computer.
+#### computers(computer=None, limit=None, after=None, dir=None)
+With no computer selector, returns a list of computers. A name string filters
+that list by exact name, and still returns a list. An integer ID or `Computer`
+model returns one computer, raising `LookupError` if the ID is not found.
+Comma-separated ID strings and ID lists are not supported selectors.
 
 ```python
 from printnode_community import Gateway
@@ -129,13 +137,15 @@ Results:
 ### Printer lookup
 https://www.printnode.com/docs/api/curl/#printers
 
-#### printers(self, computer=None, printer=None)
-There are four ways this can be run:
+#### printers(computer=None, printer=None, limit=None, after=None, dir=None)
 
-* *printer* & *computer* argument both None: Gives all printers attached to the account.
-* *printer* str/int, *computer* None: Gives a printer found from either an id or the name of a printer, taken from all possible printers.
-* *printer* None, *computer* int: Gives all printers attached to the computer given by an id.
-* *printer* str/int, *computer* int: Gives a printer found from either an id or the name of a printer, taken only from printers attached to the computer specified by the computer's id.
+* With no printer selector, returns a list of printers.
+* A printer name string filters that list by exact name, and still returns a list.
+* For these list lookups, `computer` may be an integer ID, a `Computer` model,
+  an exact computer name, or `None` for all computers.
+* An integer printer ID or `Printer` model returns one printer, raising
+  `LookupError` if the ID is not found. This lookup ignores `computer`;
+  supplying a computer does not check that the printer belongs to it.
 
 ```python
 from printnode_community import Gateway
@@ -159,14 +169,17 @@ Results:
 ### PrintJob lookup
 https://www.printnode.com/docs/api/curl/#printjob-viewing
 
-#### printjobs(self, computer=None, printer=None, printjob=None
+#### printjobs(computer=None, printer=None, printjob=None, limit=None, after=None, dir=None)
 There are five ways this can be run:
 
 * No arguments : Returns all printjobs associated with the account.
 * *computer* int : Returns all printjobs relative to printers associated with the computer specified by the argument *computer*.
-* *printer* int : Returns all printjobs relative to the printer specificed by the argument *printer*.
-* *computer* int, *printer* int : Returns all printjobs relative to the printer specified by the argument *printer* from printers with access to *computer*.
-* *printjob* int : Returns specific printjob.
+* *printer* int : Returns all printjobs relative to the printer specified by the argument *printer*.
+* *computer* int, *printer* int : Returns jobs for the printer ID; the numeric
+  printer lookup ignores the computer argument.
+* *printjob* int or `PrintJob` model : Returns one print job, ignoring
+  computer, printer and pagination arguments; raises `LookupError` if absent.
+* *printjob* str : Filters the list lookup by exact title and returns a list.
 
 ```python
 from printnode_community import Gateway
@@ -174,37 +187,42 @@ from printnode_community import Gateway
 gateway=Gateway(url='https://api.printnode.com',apikey='secretAPIKey')
 printjob_id = gateway.printjobs(computer=10027)[0].id
 print(gateway.printjobs(printer=50120)[0].id)
-print(gateway.printjobs(printjob=printjob_id))
+print(gateway.printjobs(printjob=printjob_id).id)
 
 '''
 Results:
 251137
-PrintJob(id=251127, printer=Printer(id=50118, computer=Computer(id=10027, name='5.2015-07-10 15:04:40.253763.TEST-COMPUTER', inet=None, inet6=None, hostname=None, version=None, create_timestamp='2015-07-10T15:04:40.253Z', state='created'), name='10027.1.TEST-PRINTER', description='description', capabilities={'capability_1': 'one', 'capability_2': 'two'}, default=True, create_timestamp='2015-07-10T15:04:40.253Z', state=None), title='50118.1.TEST-PRINTJOB', content_type='pdf_uri', source='API test endpoint', expire_at=None, create_timestamp='2015-07-10T15:04:40.253Z', state='new')
+251127
 '''
 ```
 ### PrintJob creation
 https://www.printnode.com/docs/api/curl/#printjob-creating
 
-#### PrintJob(self, computer=None, printer=None, job_type='pdf', title='PrintJob',options=None,authentication=None,uri=None,base64=None,binary=None)
-Only one of uri, base64 and binary can be chosen.
+#### PrintJob(computer=None, printer=None, job_type='pdf', title='PrintJob', qty=None, options=None, authentication=None, uri=None, base64=None, binary=None)
+Exactly one of `uri`, `base64` and `binary` is required. The destination must
+resolve to one printer. `uri` is a URL the PrintNode client can fetch, not a
+local file path; use `binary` for local file contents. The method submits the
+job, then looks up and returns its `PrintJob` model.
 
 ```python
 from printnode_community import Gateway
 
 gateway=Gateway(url='https://api.printnode.com',apikey='secretAPIKey')
-print(gateway.PrintJob(printer=50120,options={"copies":2},uri="a.pdf"))
+print(gateway.PrintJob(printer=50120,options={"copies":2},uri="https://example.com/document.pdf").id)
 
 '''
 Results:
-PrintJob(id=251153, printer=Printer(id=50120, computer=Computer(id=10027, name='5.2015-07-10 15:04:40.253763.TEST-COMPUTER', inet=None, inet6=None, hostname=None, version=None, create_timestamp='2015-07-10T15:04:40.253Z', state='created'), name='10027.3.TEST-PRINTER', description='description', capabilities={'capability_1': 'one', 'capability_2': 'two'}, default=False, create_timestamp='2015-07-10T15:04:40.253Z', state=None), title='PrintJob', content_type='pdf_uri', source='PythonApiClient', expire_at=None, create_timestamp='2015-07-10T15:05:27.087Z', state='new')
+251153
 '''
 ```
 ### State lookup
 
 https://www.printnode.com/docs/api/curl/#printjob-states
 
-#### states(self, printjob_set)
-Given a set of printjobs as a string (check https://www.printnode.com/docs/api/curl/#parameters for examples), returns a list of object type State. As each PrintJob can have many states, `states()` is a list of PrintJobs that each have a list of States.
+#### states(pjob_set=None, limit=None, after=None, dir=None)
+Returns a list of lists of `State` models, with one inner list per print job
+returned by the API. `pjob_set` accepts a print-job ID or a string describing
+a set of IDs; omit it to request states across print jobs.
 
 ```python
 from printnode_community import Gateway
@@ -220,7 +238,7 @@ new
 ```
 
 ### Accounts Library
-This handles anything to do with accounts, such as Account creation, deletion and modificaiton, api-key handling, tag handling and Client handling.
+This handles anything to do with accounts, such as Account creation, deletion and modification, api-key handling, tag handling and Client handling.
 
 ### Tag lookup
 https://www.printnode.com/docs/api/curl/#account-tagging
@@ -241,7 +259,7 @@ Everything!
 ```
 ### Tag modification
 #### ModifyTag(self, tagname, tagvalue)
-Given a *tagname* and *tagvalue*, either creates a tag with specifed value if *tagname* doesn't exist, otherwise changes the value.
+Given a *tagname* and *tagvalue*, either creates a tag with specified value if *tagname* doesn't exist, otherwise changes the value.
 
 ```python
 from printnode_community import Gateway
@@ -258,7 +276,7 @@ PrintNode
 
 ### Tag deletion
 #### DeleteTag(self, tagname)
-Given a *tagname*, deletes that tag. Returns True on successful deletion.
+Given a *tagname*, deletes that tag and returns the decoded API response.
 
 ```python
 from printnode_community import Gateway
@@ -357,7 +375,7 @@ B
 ### Api-key lookup
 https://www.printnode.com/docs/api/curl/#account-apikeys
 
-#### apikey(self, api_key)
+#### api_key(api_key)
 Returns value of api-key specified by the argument.
 ```python
 from printnode_community import Gateway
@@ -377,11 +395,11 @@ new_account_gateway.DeleteAccount()
 
 '''
 Results:
-5a272ed7406d351be86f25be388810dc83b8f52d
+example-api-key
 '''
 ```
 ### API Key Creation
-#### CreateApikey(self, api_key)
+#### CreateApiKey(api_key)
 Creates an api-key with the api-key's reference given by the argument.
 
 ```python
@@ -407,7 +425,7 @@ Results:
 '''
 ```
 ### API Key Deletion
-#### DeleteApikey(self, api_key)
+#### DeleteApiKey(api_key)
 Deletes api-key specified by the argument.
 
 ```python
@@ -436,7 +454,7 @@ Results:
 ### Client Key creation
 https://www.printnode.com/docs/api/curl/#account-delegated-auth
 
-#### clientkey(self, uuid, edition, version)
+#### clientkey(uuid, version, edition)
 Generates a clientkey for the account.
 
 ```python
@@ -461,7 +479,7 @@ new_account_gateway.DeleteAccount()
 
 '''
 Results:
-ck-nwa2SSvSGl1YR5zrHDVVgfdpJ8JLfVCvwaCWj8dQXmZW
+example-client-key
 '''
 ```
 ### Download client lookup
@@ -471,7 +489,8 @@ https://www.printnode.com/docs/api/curl/#account-download-management
 This has three different outcomes:
 
 * *os* and *client_ids* both None: Returns all clients available for the current account.
-* *os* str and *client_ids* None: Returns the most recent version for given OS ("windows" or "osx" only)
+* *os* str and *client_ids* None: Returns a `Download` model for the most
+  recent version for the OS value accepted by the API.
 * *os* None and *client_ids* str: Given a set of ids (e.g "11-15"), return all clients in that set.
 
 Having both set will default to showing the most recent version for the os argument.

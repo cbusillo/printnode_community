@@ -28,7 +28,8 @@ Keep the package version in `pyproject.toml` and the top `CHANGELOG.md` release 
 1. Confirm PyPI/TestPyPI trusted publisher configuration is ready.
 2. Confirm `main` is green in CI.
 3. Create a release branch from `main`.
-4. Update `pyproject.toml` with the release version.
+4. Update `pyproject.toml` with the release version and run `uv lock` so the
+   committed `uv.lock` records the same project version.
 5. Update `CHANGELOG.md` by moving relevant `Unreleased` entries under the release version and date.
 6. Run local verification:
 
@@ -99,7 +100,8 @@ Environment: pypi
 ```
 
 If publish fails with `invalid-publisher`, compare the claims in the failed
-Actions log with the pending publisher. The expected TestPyPI claims include:
+Actions log with the pending publisher. For example, a `v0.3.0` TestPyPI dispatch has these claims (substitute the
+actual release tag when checking another version):
 
 ```text
 sub: repo:cbusillo/printnode_community:environment:testpypi
