@@ -64,7 +64,7 @@ class Computers:
         """queries API for printers.
         the printer argument can be:
         * id of the printer, in which case a single printer is returned
-        * name of the printer, in which case a single printer is returned
+        * name of the printer, in which case a list of matches is returned
         * unspecified in which case a list of all printers is returned
         the computer argument can be:
         * id of the computer in which case only printers that are attached
