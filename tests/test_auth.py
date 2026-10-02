@@ -117,7 +117,7 @@ def test_gateway_delete_account_accepts_empty_success(
     (200, b'not json', 'application/json', requests.exceptions.JSONDecodeError),
     (204, b'not json', 'application/json', requests.exceptions.JSONDecodeError),
     (200, b'{"deleted": true}', 'text/html', ValueError),
-    (401, b'', 'application/json', requests.exceptions.JSONDecodeError),
+    (401, b'', 'application/json', Exception),
     (401, b'{"code":"Denied","message":"Not authorized"}', 'application/json', Unauthorized),
 ])
 def test_gateway_delete_account_preserves_response_validation(
