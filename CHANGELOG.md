@@ -6,6 +6,9 @@ The format follows the spirit of Keep a Changelog, and maintained releases use s
 
 ## Unreleased
 
+- Returned empty printer and filtered print-job lists when no computer IDs
+  resolve, without malformed requests; submission still refuses a missing
+  destination before posting a job.
 - Serialized numeric child-account IDs as valid HTTP header strings and handled
   successful empty API responses, including child-account deletion, without
   weakening validation of responses with bodies.

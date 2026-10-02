@@ -64,7 +64,7 @@ class Computers:
         """queries API for printers.
         the printer argument can be:
         * id of the printer, in which case a single printer is returned
-        * name of the printer, in which case a single printer is returned
+        * name of the printer, in which case a list of matches is returned
         * unspecified in which case a list of all printers is returned
         the computer argument can be:
         * id of the computer in which case only printers that are attached
@@ -79,6 +79,8 @@ class Computers:
 
         if self._is_multi_query(printer):
             computer_ids = ','.join(map(str, self._get_computer_ids(computer)))
+            if not computer_ids:
+                return []
             url = '/computers/{}/printers'.format(computer_ids)
             if params is not None:
                 url = url + '?' + params
