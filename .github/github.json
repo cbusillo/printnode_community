@@ -2,6 +2,8 @@
   "defaultBranch": "main",
   "projectType": "python-package",
   "docs": {
+    "index": "README.md",
+    "agentInstructions": "AGENTS.md",
     "overview": "README.md",
     "release": "RELEASE.md",
     "testing": "tests/README.md",
@@ -37,22 +39,23 @@
     "CI",
     "Publish"
   ],
-  "requiredStatusChecks": [
-    "Test Python 3.10",
-    "Test Python 3.11",
-    "Test Python 3.12",
-    "Test Python 3.13",
-    "Test Python 3.14",
-    "Build package"
-  ],
-  "qaLabels": [],
-  "deployLabels": [],
-  "healthUrls": [
-    {
-      "name": "PyPI",
-      "url": "https://pypi.org/project/printnode-community/"
+  "prWorkflow": {
+    "mergeMethod": "merge",
+    "requiredStatusChecks": [
+      "Test Python 3.10",
+      "Test Python 3.11",
+      "Test Python 3.12",
+      "Test Python 3.13",
+      "Test Python 3.14",
+      "Build package"
+    ],
+    "requiresStrictStatusChecks": true
+  },
+  "githubSettings": {
+    "expected": {
+      "deleteBranchOnMerge": true
     }
-  ],
+  },
   "cleanup": {
     "deleteMergedLocalBranches": true,
     "removeMergedCleanWorktrees": true
@@ -64,7 +67,7 @@
     },
     "capabilities": {
       "codeScanning": "available",
-      "secretScanning": "not_enabled",
+      "secretScanning": "unavailable",
       "dependabotAlerts": "available",
       "securityAdvisories": "available"
     },
@@ -82,7 +85,10 @@
       "validation gates change",
       "primary commands change",
       "important workflows change",
-      "health endpoint changes",
+      "merge path changes",
+      "required status checks change",
+      "repository settings or rulesets change",
+      "overall or repository direction changes",
       "repo relationship changes",
       "cleanup policy changes",
       "release workflow changes",
