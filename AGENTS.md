@@ -61,8 +61,9 @@ This repository is maintained as a careful, community-oriented Python client for
 - Prefer TestPyPI before first publishing under a new distribution name, but allow skipping it when CI, build metadata checks, and release-tag guards are sufficient.
 - Run the manual `Publish` workflow from a `v*` release tag only.
 - Keep the `testpypi` environment unblocked by manual review.
-- Do not require GitHub environment review for `pypi`; treat release PR merge,
-  tag creation, and manual workflow dispatch as the publish approval path.
+- Do not require GitHub environment review for `pypi`.
+- Release timing follows the release rule in the Director's
+  [overall direction](https://github.com/cbusillo/direction/blob/HEAD/DIRECTION.md).
 - Trusted publishers must match project `printnode_community`, owner `cbusillo`, repository `printnode_community`, workflow `publish.yml`, and environment `testpypi` or `pypi`.
 - Update `CHANGELOG.md` for user-visible changes.
 - Keep release notes clear about whether this is an official PrintNode release or a community-maintained fork.
