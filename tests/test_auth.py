@@ -348,3 +348,4 @@ def test_request_rewrites_requests_exceptions(
         Auth(url=API_ADDRESS, apikey=API_KEY).get('whoami')
 
     assert str(error.value) == str(request_error)
+    assert error.value.__cause__ is request_error

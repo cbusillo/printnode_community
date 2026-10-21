@@ -6,6 +6,8 @@ The format follows the spirit of Keep a Changelog, and maintained releases use s
 
 ## Unreleased
 
+- Removed obsolete Python 2 compatibility branches and the `future` dependency;
+  the supported Python range and request/print-job behavior are unchanged.
 - Returned empty printer and filtered print-job lists when no computer IDs
   resolve, without malformed requests; submission still refuses a missing
   destination before posting a job.

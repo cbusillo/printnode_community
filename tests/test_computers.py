@@ -3,9 +3,8 @@ import pytest
 from printnode_community.computers import Computers
 from printnode_community.gateway import Gateway
 from printnode_community.model import Computer, ModelFactory, Printer, PrintJob
-
-from tests.test_model import computer_payload, printer_payload, printjob_payload
 from tests.test_auth import FakeResponse
+from tests.test_model import computer_payload, printer_payload, printjob_payload
 
 
 class FakeAuth:
@@ -272,7 +271,13 @@ def test_get_states_builds_global_and_printjob_specific_paths():
     assert printjob_states[0][0].state == 'done'
 
 
-def test_submit_printjob_encodes_binary_content_and_posts_job():
+@pytest.mark.parametrize('binary,expected_content', [
+    (b'PDF', 'UERG'),
+    (bytearray(b'PDF'), 'UERG'),
+    ('\x00\xff', 'AP8='),
+])
+def test_submit_printjob_encodes_binary_content_and_posts_job(
+        binary: bytes | bytearray | str, expected_content: str) -> None:
     computers, auth = make_computers({
         '/printers/200': [printer_payload(id=200)],
     })
@@ -283,14 +288,14 @@ def test_submit_printjob_encodes_binary_content_and_posts_job():
         title='Packing Slip',
         qty=2,
         options={'paper': 'Letter'},
-        binary=b'PDF')
+        binary=binary)
 
     assert printjob_id == 900
     assert auth.post_calls == [('/printjobs', {
         'printerId': 200,
         'title': 'Packing Slip',
         'contentType': 'pdf_base64',
-        'content': 'UERG',
+        'content': expected_content,
         'source': 'PythonApiClient',
         'options': {'paper': 'Letter'},
         'qty': 2,

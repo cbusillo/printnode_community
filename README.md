@@ -9,7 +9,6 @@ This is a Python library to interact with PrintNode's remote printing API. This 
 
 * Python 3.10+
 * requests
-* future
 
 ### Installation
 

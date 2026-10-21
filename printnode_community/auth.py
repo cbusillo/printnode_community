@@ -1,9 +1,8 @@
-import re
-import os
 import json
+import os
+import re
+
 import requests
-import sys
-from future.utils import raise_from
 
 
 class Auth:
@@ -110,8 +109,6 @@ class Auth:
             template = 'Incorrect Content-Type "{}" for url "{}"'
             raise ValueError(template.format(content_type, url))
         response_obj = response.json()
-        if sys.version_info[0] < 3:
-            response_obj = self._fix_unicode(response_obj)
 
         if 401 == response.status_code:
             raise Unauthorized(response.status_code, **response_obj)
@@ -129,30 +126,6 @@ class Auth:
     def _is_hundreth(self, hundreth, number):
         pattern = str(hundreth) + r'\d{2,}'
         return bool(re.match(pattern, str(number)))
-
-    def _fix_unicode(self, json_object):
-        returnvalue = json_object
-        if type(json_object) is dict:
-            returnvalue = {}
-            for k, v in json_object.iteritems():
-                if type(k) is unicode:
-                    k = k.encode('utf-8')
-                if type(v) is dict or type(v) is list:
-                    v = self._fix_unicode(v)
-                if type(v) is unicode:
-                    v = v.encode('utf-8')
-                returnvalue.update({k: v})
-        if type(json_object) is list:
-            returnvalue = []
-            for x in json_object:
-                if type(x) is unicode:
-                    x = x.encode('utf-8')
-                if type(x) is dict or type(x) is list:
-                    x = self._fix_unicode(x)
-                returnvalue.append(x)
-        if type(json_object) is unicode:
-            returnvalue = json_object.encode('utf-8')
-        return returnvalue
 
 
 class ApiError(RuntimeError):
@@ -226,4 +199,4 @@ class rewrite_requests_error:
             if issubclass(exc_type, request_exc):
                 exc = network_exc
                 break
-        raise_from(exc(str(exc_value)), exc_value)
+        raise exc(str(exc_value)) from exc_value
