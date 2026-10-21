@@ -1,7 +1,6 @@
-from .model import Computer, Model, Printer, PrintJob
-from future.types import newbytes
 import base64 as base_64
-import sys
+
+from .model import Computer, Model, Printer, PrintJob
 
 
 class Computers:
@@ -176,13 +175,10 @@ class Computers:
                              'is needed: uri, base64, or binary')
 
         if binary is not None:
-            if sys.version_info[0] < 3:
-                binary_bytes = newbytes(binary)
+            if isinstance(binary, str):
+                binary_bytes = binary.encode('latin-1')
             else:
-                if isinstance(binary, str):
-                    binary_bytes = binary.encode('latin-1')
-                else:
-                    binary_bytes = binary
+                binary_bytes = binary
             base64 = base_64.b64encode(binary_bytes)
             base64 = base64.decode('utf-8')
 

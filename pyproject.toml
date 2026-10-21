@@ -32,7 +32,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "future>=1.0.0",
     "requests>=2.32.0",
 ]
 
