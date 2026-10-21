@@ -29,6 +29,10 @@ This repository is maintained as a careful, community-oriented Python client for
 - Keep `uv.lock` committed for reproducible development and CI.
 - Preserve the `printnode_community` import path unless a breaking-change pull request explicitly changes it.
 - Prefer modern Python packaging practices while avoiding unnecessary rewrites.
+- Write Python and Odoo JavaScript in the shared
+  [Python and Odoo style](https://github.com/cbusillo/codex-skills/blob/HEAD/skills/references/python-odoo-style.md).
+- This library's supported Python range in `pyproject.toml` and public API
+  compatibility take precedence over Odoo runtime targets and newer typing features.
 
 ## Dependency Maintenance
 
