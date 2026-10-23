@@ -18,10 +18,12 @@ in `.github/github.json`:
 
 ```sh
 uv sync --locked
-uv run pytest
 uv build
 uv run twine check dist/*
 ```
+
+Select local tests under [Local Verification](AGENTS.md#local-verification).
+The complete suite runs in CI before ready or merge.
 
 ## Tests
 

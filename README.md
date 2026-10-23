@@ -39,15 +39,17 @@ Install development dependencies and run the local verification gates with:
 
 ```sh
 uv sync --locked
-uv run pytest
 uv build
 uv run twine check dist/*
 ```
 
+Use [Local Verification](https://github.com/cbusillo/printnode_community/blob/HEAD/AGENTS.md#local-verification) for focused test selection
+and the complete CI requirement.
+
 ### Releases
 
 Maintained releases are published to PyPI from reviewed release tags. See
-[RELEASE.md](RELEASE.md) for the release process and TestPyPI/PyPI workflow
+[RELEASE.md](https://github.com/cbusillo/printnode_community/blob/HEAD/RELEASE.md) for the release process and TestPyPI/PyPI workflow
 requirements.
 
 ### Getting Started

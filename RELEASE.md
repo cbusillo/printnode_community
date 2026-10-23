@@ -35,10 +35,12 @@ Keep the package version in `pyproject.toml` and the top `CHANGELOG.md` release 
 
 ```sh
 uv sync --locked
-uv run pytest
 rm -rf dist && uv build
 uv run twine check dist/*
 ```
+
+Select focused tests under [Local Verification](AGENTS.md#local-verification);
+the complete suite stays in CI, including the Publish workflow's existing gate.
 
 7. Open a release PR and wait for required CI checks.
 8. Merge the release PR.

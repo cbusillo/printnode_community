@@ -15,14 +15,15 @@
       "default": "uv sync --locked"
     },
     "test": {
-      "default": "uv run pytest"
+      "local": "uv run pytest {test_paths}",
+      "ci": "uv run pytest"
     },
     "build": {
       "package": "uv build",
       "checkDistribution": "uv run twine check dist/*"
     },
     "release": {
-      "verify": "uv sync --locked && uv run pytest && rm -rf dist && uv build && uv run twine check dist/*"
+      "verify": "uv sync --locked && rm -rf dist && uv build && uv run twine check dist/*"
     },
     "docsRequiredWhen": [
       "behavior changes",
