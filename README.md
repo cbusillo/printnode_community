@@ -39,10 +39,12 @@ Install development dependencies and run the local verification gates with:
 
 ```sh
 uv sync --locked
-uv run pytest
 uv build
 uv run twine check dist/*
 ```
+
+Use [Local Verification](AGENTS.md#local-verification) for focused test selection
+and the complete CI requirement.
 
 ### Releases
 

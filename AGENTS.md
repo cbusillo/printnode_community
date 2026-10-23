@@ -79,9 +79,16 @@ Use the canonical gates from `.github/github.json`:
 
 ```sh
 uv sync --locked
-uv run pytest
 uv build
 uv run twine check dist/*
 ```
+
+For tests, follow the [local/CI command contract](https://github.com/cbusillo/codex-skills/blob/main/skills/github/references/config-schema.md#workflow-metadata).
+Replace `{test_paths}` in `test.local` with a nonempty selection of affected
+test paths. Authentication and mutating API changes include their complete
+`tests/test_auth.py` and `tests/test_accounts.py` modules as applicable; trace
+callers for additional safety coverage. CI runs the complete `test.ci` suite
+before ready or merge. Release packaging verification keeps its existing
+build checks; its full-suite coverage comes from CI and Publish.
 
 If a command cannot be run locally, mention why in the pull request body.
