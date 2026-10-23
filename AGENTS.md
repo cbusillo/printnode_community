@@ -83,11 +83,10 @@ uv build
 uv run twine check dist/*
 ```
 
-For tests, follow the [local/CI command contract](https://github.com/cbusillo/codex-skills/blob/main/skills/github/references/config-schema.md#workflow-metadata).
+For tests, follow the [local/CI command contract](https://github.com/cbusillo/codex-skills/blob/HEAD/skills/github/references/config-schema.md#workflow-metadata).
 Replace `{test_paths}` in `test.local` with a nonempty selection of affected
-test paths. Authentication and mutating API changes include their complete
-`tests/test_auth.py` and `tests/test_accounts.py` modules as applicable; trace
-callers for additional safety coverage. CI runs the complete `test.ci` suite
+test paths. Select complete safety modules by the changed authentication flow
+or mutating endpoint and its callers. CI runs the complete `test.ci` suite
 before ready or merge. Release packaging verification keeps its existing
 build checks; its full-suite coverage comes from CI and Publish.
 
