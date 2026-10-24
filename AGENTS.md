@@ -36,10 +36,8 @@ This repository is maintained as a careful, community-oriented Python client for
 
 ## Dependency Maintenance
 
-- Keep Dependabot enabled for every dependency surface in the repository.
-- Configure Dependabot for `uv`, GitHub Actions, and `pre-commit` when pre-commit hooks exist.
-- Add new Dependabot ecosystems when new manifests are introduced.
-- Dependabot pull requests must pass the same CI as human pull requests.
+- Renovate updates dependencies through `renovate.json`, which extends the shared preset.
+- Renovate pull requests must pass the same CI as human pull requests.
 
 ## Testing Standards
 
