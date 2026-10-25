@@ -8,7 +8,7 @@ Evidence: [README.md](README.md).
 
 ## Project Mission
 
-This repository is maintained as a careful, community-oriented Python client for the PrintNode API. Prioritize correctness, compatibility, clear releases, and a learning-friendly development workflow.
+Prioritize correctness, compatibility, clear releases, and a learning-friendly development workflow.
 
 ## Branch and PR Rules
 
