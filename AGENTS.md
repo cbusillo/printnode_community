@@ -1,8 +1,14 @@
 # AGENTS.md
 
+## What PrintNode Community does
+
+PrintNode Community is a community-maintained Python client for the PrintNode remote-printing API.
+It lets Python programs call PrintNode's printing services; it is not an official PrintNode release.
+Evidence: [README.md](README.md).
+
 ## Project Mission
 
-This repository is maintained as a careful, community-oriented Python client for the PrintNode API. Prioritize correctness, compatibility, clear releases, and a learning-friendly development workflow.
+Prioritize correctness, compatibility, clear releases, and a learning-friendly development workflow.
 
 ## Branch and PR Rules
 
