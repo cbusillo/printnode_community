@@ -22,6 +22,8 @@ which takes precedence over repository instructions.
   GitHub workflow sessions can discover non-secret repo workflow facts,
   validation commands, GitHub signal availability, docs routing, important
   workflows, and cleanup policy.
+- Do not commit directly to `main`.
+- Use a focused branch and pull request for every meaningful change.
 - Keep pull requests small enough to review.
 - Require tests and CI before merge whenever the change affects code, packaging, or release behavior.
 - Treat default-branch migration and repository settings as explicit maintenance tasks.
@@ -48,6 +50,8 @@ which takes precedence over repository instructions.
 - The default test suite must not require real PrintNode credentials.
 - Use mocked HTTP tests for normal CI.
 - Gate live PrintNode API tests behind explicit environment variables.
+- Add or update tests for behavior changes.
+- Do not remove coverage just because legacy tests are awkward.
 - Follow the shared [Tests rules](https://github.com/cbusillo/codex-skills/blob/HEAD/instructions/global.md#tests).
 
 ## Release Standards
