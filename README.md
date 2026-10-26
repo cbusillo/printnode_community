@@ -35,6 +35,8 @@ the development dependencies.
 
 ### Development
 
+Follow the Director's [overall direction](https://github.com/cbusillo/direction/blob/HEAD/DIRECTION.md).
+
 Install development dependencies and run the local verification gates with:
 
 ```sh

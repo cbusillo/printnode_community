@@ -10,6 +10,11 @@ Evidence: [README.md](README.md).
 
 Prioritize correctness, compatibility, clear releases, and a learning-friendly development workflow.
 
+## Direction
+
+Follow the Director's [overall direction](https://github.com/cbusillo/direction/blob/HEAD/DIRECTION.md),
+which takes precedence over repository instructions.
+
 ## Branch and PR Rules
 
 - The default branch is `main`.
@@ -22,11 +27,6 @@ Prioritize correctness, compatibility, clear releases, and a learning-friendly d
 - Keep pull requests small enough to review.
 - Require tests and CI before merge whenever the change affects code, packaging, or release behavior.
 - Treat default-branch migration and repository settings as explicit maintenance tasks.
-- Follow the Director's [overall direction](https://github.com/cbusillo/direction/blob/HEAD/DIRECTION.md)
-  for ordinary engineering within the authorized task, including task-branch
-  pushes and pull requests. Apply its Stop Boundaries; task-specific action
-  limits still apply. Merge only when the task authorizes the change and
-  destination and required checks pass.
 
 ## Python Project Standards
 
@@ -52,15 +52,7 @@ Prioritize correctness, compatibility, clear releases, and a learning-friendly d
 - Gate live PrintNode API tests behind explicit environment variables.
 - Add or update tests for behavior changes.
 - Do not remove coverage just because legacy tests are awkward.
-- A test stays only if it fails when the product is broken and passes when
-  someone makes an intended change.
-- No test may assert a literal defined elsewhere (package version, Python or
-  toolchain versions, hashes, classifiers); read it from the one source of
-  truth or do not test it.
-- No test may assert workflow or config text. Enforce such rules where they
-  execute (the workflow itself, or a helper script with its own unit test).
-- Verification code must not depend on working-tree state; check live state
-  only on the path that acts on it.
+- Follow the shared [Tests rules](https://github.com/cbusillo/codex-skills/blob/HEAD/instructions/global.md#tests).
 
 ## Release Standards
 

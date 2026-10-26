@@ -4,9 +4,8 @@ Thank you for helping maintain this PrintNode API client. This fork aims to be c
 
 ## Workflow
 
-- Open a focused pull request for every meaningful change.
-- Do not commit directly to `main`.
-- Keep changes small and reviewable.
+Follow [repository direction](AGENTS.md#direction) and [Branch and PR Rules](AGENTS.md#branch-and-pr-rules).
+
 - Include tests for behavior changes.
 - Update documentation when user-facing behavior changes.
 - Mention any command you could not run in the pull request body.
@@ -27,9 +26,7 @@ The complete suite runs in CI before ready or merge.
 
 ## Tests
 
-Default tests must not require real PrintNode credentials. Use mocked HTTP responses for normal test coverage.
-
-Live PrintNode API tests may be added, but they must be opt-in and gated by environment variables so they never run accidentally in CI or on contributor machines.
+Follow [Testing Standards](AGENTS.md#testing-standards).
 
 ## Compatibility
 
