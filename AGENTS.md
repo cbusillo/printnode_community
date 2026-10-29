@@ -81,8 +81,7 @@ uv run twine check dist/*
 For tests, follow the [local/CI command contract](https://github.com/cbusillo/codex-skills/blob/HEAD/skills/github/references/config-schema.md#workflow-metadata).
 Replace `{test_paths}` in `test.local` with a nonempty selection of affected
 test paths. Select complete safety modules by the changed authentication flow
-or mutating endpoint and its callers. CI runs the complete `test.ci` suite
-before ready or merge. Release packaging verification keeps its existing
+or mutating endpoint and its callers. Release packaging verification keeps its existing
 build checks; its full-suite coverage comes from CI and Publish.
 
 If a command cannot be run locally, mention why in the pull request body.
