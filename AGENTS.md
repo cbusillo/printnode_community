@@ -22,8 +22,7 @@ which takes precedence over repository instructions.
   GitHub workflow sessions can discover non-secret repo workflow facts,
   validation commands, GitHub signal availability, docs routing, important
   workflows, and cleanup policy.
-- Do not commit directly to `main`.
-- Use a focused branch and pull request for every meaningful change.
+- Follow the shared [GitHub workflow](https://github.com/cbusillo/codex-skills/blob/main/skills/github/SKILL.md).
 - Keep pull requests small enough to review.
 - Require tests and CI before merge whenever the change affects code, packaging, or release behavior.
 - Treat default-branch migration and repository settings as explicit maintenance tasks.
