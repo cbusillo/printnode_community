@@ -41,6 +41,7 @@ which takes precedence over repository instructions.
 ## Dependency Maintenance
 
 - Renovate updates dependencies through `renovate.json`, which extends the shared preset.
+- Renovate pull requests must pass the same CI as human pull requests.
 
 ## Testing Standards
 
